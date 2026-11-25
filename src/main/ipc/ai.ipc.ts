@@ -1,3 +1,4 @@
+import { identityOf } from '../ai/prompts';
 import type { IpcMain } from 'electron';
 import type { ConfigService } from '../services/ConfigService';
 import type { KbService } from '../services/KbService';
@@ -83,6 +84,7 @@ export function registerAiIpc(ipcMain: IpcMain, deps: AiIpcDeps): AiIpc {
   /** The model seam: tests inject a scripted model; production resolves through the adapter factory. */
   const makeService = (config: AiConfig, tools: McpTools | null): AiService =>
     new AiService(config, env, {
+      project: () => identityOf(deps.configService.getProject().config, deps.configService.getConfig().knowledgeBase.rootPath),
       broadcast: (event) => deps.broadcast({ type: event.type, timestamp: Date.now(), payload: event } as CockpitEvent<AiEvent>),
       usage: deps.usage,
       tools: tools?.tools,

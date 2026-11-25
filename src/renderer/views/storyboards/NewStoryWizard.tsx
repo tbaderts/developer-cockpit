@@ -16,7 +16,7 @@ export function NewStoryWizard() {
   const [rootId, setRootId] = useState(roots[0]?.rootId ?? '');
   const [domain, setDomain] = useState('');
   const [title, setTitle] = useState('');
-  const [lanes, setLanes] = useState<Lane[]>([{ id: 'customer', label: 'Customer', kind: 'actor' }, { id: 'oms', label: 'OMS', kind: 'system' }]);
+  const [lanes, setLanes] = useState<Lane[]>([{ id: 'customer', label: 'Customer', kind: 'actor' }, { id: 'system', label: 'System', kind: 'system' }]);
   const [steps, setSteps] = useState<string[]>(['']);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);

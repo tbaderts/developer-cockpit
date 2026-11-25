@@ -9,7 +9,7 @@ import { McpToolRegistry, kbSearchTool, type ToolLike } from './McpToolRegistry'
 export const KB_TOOL_NAMES = ['searchKnowledgeBase', 'readKnowledgeBase', 'getKnowledgeBaseOverview'] as const;
 
 /**
- * The parameters the knowledge server's KB tools really need. oms-mcp-server (Spring AI) declares
+ * The parameters the knowledge server's KB tools really need. The knowledge server (Spring AI) declares
  * every parameter required, but treats all but these as optional, so the model is asked only for
  * these and the rest are filled with neutral values (see `neutralValue`).
  */

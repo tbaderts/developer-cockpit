@@ -59,7 +59,7 @@ export function NewTicketDialog({ onCreated }: { onCreated?: (id: string) => voi
             </div>
             <div className="space-y-1">
               <Label htmlFor="new-modules">Modules (comma-separated)</Label>
-              <Input id="new-modules" value={modules} onChange={(e) => setModules(e.target.value)} placeholder="oms-core, oms-contracts" />
+              <Input id="new-modules" value={modules} onChange={(e) => setModules(e.target.value)} placeholder="api, web" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="new-goal">Goal (the requester's words)</Label>
