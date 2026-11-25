@@ -34,6 +34,12 @@ export function ProjectCard({ project }: { project: ProjectConfigResult | null }
         <div className="break-all font-mono text-xs text-muted-foreground">{file}</div>
         {!present && <p className="text-xs text-muted-foreground">Without this file the cockpit uses its defaults and the settings below.</p>}
         {errors.length > 0 && (
+          <p className="text-xs text-muted-foreground" data-testid="project-errors-effect">
+            Until these are fixed none of the file applies: no code-generation tasks, APIs, templates, links or monitoring, and the
+            paths below fall back to your own settings.
+          </p>
+        )}
+        {errors.length > 0 && (
           <ul className="list-disc space-y-0.5 pl-5 font-mono text-xs text-destructive" data-testid="project-errors">
             {errors.map((e, i) => (
               <li key={i}>

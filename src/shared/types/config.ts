@@ -52,7 +52,8 @@ export interface AiConfig {
   knowledgeServerUrl?: string;
 }
 
-export const DEFAULT_KNOWLEDGE_SERVER_URL = 'http://localhost:8091/mcp';
+/** No knowledge server unless the project (cockpit.yaml `knowledgeBase.serverUrl`) or the user names one. */
+export const DEFAULT_KNOWLEDGE_SERVER_URL = '';
 
 export interface KnowledgeBaseConfig {
   rootPath: string;
@@ -67,9 +68,6 @@ export interface InfrastructureConfig {
   /** Path to the `docker` CLI. Defaults to `docker` (found on PATH). Override for non-standard installs. */
   dockerPath?: string;
   kubernetesEnabled: boolean;
-  prometheusUrl: string;
-  grafanaUrl: string;
-  lokiUrl: string;
   /** Extra `.http` files the API Explorer lists as templates, workspace-relative or absolute. */
   apiTemplateSources: string[];
 }
@@ -114,9 +112,6 @@ export const DEFAULT_CONFIG: CockpitConfig = {
     dockerEnabled: true,
     dockerRefreshIntervalSeconds: 5,
     kubernetesEnabled: false,
-    prometheusUrl: 'http://localhost:9090',
-    grafanaUrl: 'http://localhost:3000',
-    lokiUrl: 'http://localhost:3100',
     apiTemplateSources: [],
   },
   specs: {

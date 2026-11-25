@@ -127,3 +127,29 @@ describe('useMonitorStore', () => {
     expect(api.poll).toHaveBeenCalledTimes(3);
   });
 });
+
+describe('a changed cockpit.yaml (SPEC-0076 review)', () => {
+  afterEach(() => {
+    useMonitorStore.getState().stop();
+    useMonitorStore.setState(useMonitorStore.getInitialState(), true);
+  });
+
+  it('a poll that no longer matches the config on screen re-reads the config first', async () => {
+    const edited: MonitorConfigResult = { ...CONFIG, monitoring: { ...CONFIG.monitoring, services: [...CONFIG.monitoring.services, { ...CONFIG.monitoring.services[1], name: 'cache' }] } };
+    const api = {
+      config: vi.fn(async () => CONFIG),
+      poll: vi.fn(async () => poll(1, [check('api', 'UP', 1), check('db', 'UP', 1)])),
+    };
+    (window as unknown as { cockpit: unknown }).cockpit = { monitor: api };
+    await useMonitorStore.getState().loadConfig();
+    await useMonitorStore.getState().load();
+    expect(api.config).toHaveBeenCalledTimes(1);
+
+    api.config.mockResolvedValue(edited);
+    api.poll.mockResolvedValue(poll(2, [check('api', 'UP', 2), check('db', 'UP', 2), check('cache', 'DOWN', 2)]));
+    await useMonitorStore.getState().load();
+    expect(api.config).toHaveBeenCalledTimes(2);
+    expect(useMonitorStore.getState().config?.monitoring.services.map((s) => s.name)).toEqual(['api', 'db', 'cache']);
+    expect(useMonitorStore.getState().history.cache).toHaveLength(1);
+  });
+});

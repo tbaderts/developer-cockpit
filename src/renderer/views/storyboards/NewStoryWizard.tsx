@@ -63,7 +63,7 @@ export function NewStoryWizard() {
               {roots.map((r) => <option key={r.rootId} value={r.rootId}>{r.label}</option>)}
             </select>
           </label>
-          <label className="text-xs text-muted-foreground">Domain<input aria-label="Domain" placeholder="order-lifecycle" className={input} value={domain} onChange={(e) => setDomain(e.target.value)} /></label>
+          <label className="text-xs text-muted-foreground">Domain<input aria-label="Domain" placeholder="checkout" className={input} value={domain} onChange={(e) => setDomain(e.target.value)} /></label>
           <label className="text-xs text-muted-foreground">Title<input aria-label="Title" className={input} value={title} onChange={(e) => setTitle(e.target.value)} /></label>
         </div>
         <LanesEditor lanes={lanes} onChange={editLanes} />

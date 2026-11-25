@@ -155,7 +155,8 @@ export function registerAiIpc(ipcMain: IpcMain, deps: AiIpcDeps): AiIpc {
    * on every question while it is down (design D6).
    */
   const kbChatToolsFor = async (config: AiConfig): Promise<KbChatToolSet> => {
-    const url = config.knowledgeServerUrl ?? DEFAULT_KNOWLEDGE_SERVER_URL;
+    // The user's setting wins; else the project's knowledge server; else none (local tools).
+    const url = config.knowledgeServerUrl?.trim() || deps.configService.getProject().config.knowledgeBase.serverUrl || DEFAULT_KNOWLEDGE_SERVER_URL;
     const cached = runtime.kbChat;
     if (cached && cached.url === url && (cached.set.source === 'knowledge-server' || Date.now() - cached.builtAt < KB_CHAT_RETRY_MS)) {
       return cached.set;

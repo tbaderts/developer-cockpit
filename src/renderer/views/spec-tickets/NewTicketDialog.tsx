@@ -44,7 +44,7 @@ export function NewTicketDialog({ onCreated }: { onCreated?: (id: string) => voi
           <div className="space-y-3">
             <div className="space-y-1">
               <Label htmlFor="new-title">Title</Label>
-              <Input id="new-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Reject zero-quantity orders" />
+              <Input id="new-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Validate the signup form" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="new-type">Type</Label>

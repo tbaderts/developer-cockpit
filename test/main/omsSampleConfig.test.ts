@@ -25,7 +25,7 @@ describe.skipIf(!present)('the host repository sample cockpit.yaml (needs cockpi
     expect(config.monitoring.services.map((s) => s.name).sort()).toEqual(composeServices);
 
     const panels = config.monitoring.panels.map((p) => p.title);
-    for (const tile of ['Orders by state', 'Order events / min', 'Time to ack p99', 'Time to market p99', 'Outbox pending', 'Outbox stuck']) {
+    for (const tile of ['Orders by state', 'Order events / min', 'Time to ack p99', 'Time to market p99', 'Outbox pending', 'Outbox stuck', 'Outbox oldest age']) {
       expect(panels).toContain(tile);
     }
   });

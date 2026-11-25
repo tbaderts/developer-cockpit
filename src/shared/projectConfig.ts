@@ -113,6 +113,8 @@ export const projectConfigSchema = z.object({
       root: relPath.default('knowledge-base'),
       checkScript: relPath.default('tools/okf-check/okf-check.mjs'),
       stateDiagramDoc: relPath.optional(),
+      /** MCP endpoint (streamable HTTP) of a knowledge server for the KB chat; see the README. */
+      serverUrl: httpUrl.optional(),
     })
     .default({ root: 'knowledge-base', checkScript: 'tools/okf-check/okf-check.mjs' }),
   specs: z

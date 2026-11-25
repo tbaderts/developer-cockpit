@@ -178,3 +178,38 @@ describe('ApiCatalogService', () => {
     expect(apis[0].error).toMatch(/may not leave the spec folder/);
   });
 });
+
+describe('ApiCatalogService $ref resolution (SPEC-0076 review)', () => {
+  it('resolves a file ref relative to the file that contains it, and refuses one outside the folder', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cockpit-api-'));
+    try {
+      fs.mkdirSync(path.join(root, 'api', 'schemas'), { recursive: true });
+      fs.writeFileSync(path.join(root, 'api', 'pets.yml'), `
+openapi: 3.0.3
+info: { title: Pets, version: 1.0.0 }
+paths:
+  /pets:
+    post:
+      requestBody: { content: { application/json: { schema: { $ref: 'schemas/pet.yml#/Pet' } } } }
+`);
+      fs.writeFileSync(path.join(root, 'api', 'schemas', 'pet.yml'), "Pet: { type: object, properties: { tag: { $ref: 'tag.yml#/Tag' } } }\n");
+      fs.writeFileSync(path.join(root, 'api', 'schemas', 'tag.yml'), 'Tag: { type: string, enum: [a, b] }\n');
+      const op = new ApiCatalogService(root, [{ name: 'Pets', spec: 'api/pets.yml', baseUrl: 'http://localhost:1' }]).load().apis[0].operations[0];
+      expect(op.requestSchema).toEqual({ type: 'object', properties: { tag: { type: 'string', enum: ['a', 'b'] } } });
+
+      const other = process.platform === 'win32' ? 'Z:/elsewhere/x.yml' : '/etc/elsewhere/x.yml';
+      fs.writeFileSync(path.join(root, 'api', 'abs.yml'), `
+openapi: 3.0.3
+info: { title: Abs, version: 1.0.0 }
+paths:
+  /x:
+    post:
+      requestBody: { content: { application/json: { schema: { $ref: '${other}#/X' } } } }
+`);
+      const abs = new ApiCatalogService(root, [{ name: 'Abs', spec: 'api/abs.yml', baseUrl: 'http://localhost:1' }]).load().apis[0];
+      expect(abs.error).toMatch(/may not leave the spec folder/);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+});

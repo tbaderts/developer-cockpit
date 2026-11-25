@@ -50,7 +50,7 @@ optional; without the file the cockpit starts with empty defaults and tells you 
 | Section | Used by | Keys |
 |---|---|---|
 | `project` | Titles, AI prompts | `name`, `description` |
-| `knowledgeBase` | Knowledge Base, Requirements, KB chat | `root` (default `knowledge-base`), `checkScript` (KB health checker), `stateDiagramDoc` (storyboard links to state transitions) |
+| `knowledgeBase` | Knowledge Base, Requirements, KB chat | `root` (default `knowledge-base`), `checkScript` (KB health checker), `stateDiagramDoc` (storyboard links to state transitions), `serverUrl` (knowledge server, below) |
 | `specs` | Spec Tickets, Contracts | `cli` (default `specs/tools/spec.mjs`), `openApiPaths`, `avroPaths` |
 | `codegen` | Contracts → code generation | list of `{ id, name, description, cwd, command, windowsCommand?, inputs? }`; `command` is an argument list, run in `cwd` without a shell |
 | `watch` | Live refresh | extra folders to watch |
@@ -62,6 +62,10 @@ optional; without the file the cockpit starts with empty defaults and tells you 
 The file is validated when it is read and re-read when it changes. An invalid entry is reported
 with its path (for example `monitoring.services[2].check.url: Must be an http(s) URL`) in Settings →
 Project file and in the Monitoring view; the rest of the app keeps working with the defaults.
+
+**Trust.** `cockpit.yaml` decides what the cockpit runs and calls: the code-generation commands,
+the spec CLI and KB checker scripts, and the hosts it monitors and sends requests to. Opening a
+repository with the cockpit is like running its build: only open repositories you trust.
 
 Personal settings — theme, AI provider and keys, the workspace root — stay in
 `~/.developer-cockpit/config.json` (override the folder with `COCKPIT_CONFIG_DIR`). Settings that
@@ -79,7 +83,8 @@ Each entry under `monitoring.services` becomes a tile, grouped by `group`:
 
 A tile shows the status, why a service is down, its response-time sparkline and a strip of the
 last 30 checks. The header counts the services that are up, and a timeline lists every status
-change while the view is open. History is kept in memory only; use Grafana for long-term history.
+change. History is kept in memory for the session (it survives switching views, not a restart); use
+Grafana for long-term history.
 
 Panels show metrics as a single value (`stat`), a line over time (`timeseries`) or one bar per
 label value (`bars`), in the units `count`, `ms`, `s`, `percent`, `bytes` or `perMinute`. A panel
@@ -102,7 +107,17 @@ path and query parameters, and a body built from the request schema. A polymorph
 schema as you type. `.http` files under `templateSources` are listed as templates; their
 `@variables` and `{{$guid}}`, `{{$timestamp}}`, `{{$datetime iso8601}}` and `{{$randomInt a b}}`
 are resolved when you send. Requests other than GET, HEAD and OPTIONS to a host that is not local
-ask for confirmation first. Sent requests are kept in a history of 100.
+ask for confirmation first, and redirects are shown rather than followed. Sent requests are kept in
+a history of 100; the values of credential headers (`Authorization`, `Cookie`, API keys, tokens)
+are not stored.
+
+## Knowledge server
+
+The KB chat answers from the knowledge base. With `knowledgeBase.serverUrl` (or the AI settings'
+knowledge server URL, which wins) it uses an MCP server over streamable HTTP that offers the tools
+`searchKnowledgeBase(query)`, `readKnowledgeBase(path, anchor?, offset?, limit?)` and
+`getKnowledgeBaseOverview()`; paths are given as `<knowledge base root>/<path>`. Without a server,
+or while it is unreachable, the chat uses the cockpit's own search and read tools.
 
 ## Spec workflow
 

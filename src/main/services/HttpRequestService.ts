@@ -15,7 +15,8 @@ export interface HttpRequestOptions {
  * Sends the API Explorer's requests (SPEC-0076). Runs in the main process (no CSP or CORS
  * involved) and never throws: every failure is an ApiResponse with `status: null` and an `error`.
  * Only http(s) URLs are sent; a request that may change something (anything but GET, HEAD and
- * OPTIONS) to a non-local host is refused unless `confirmedHost` names that host.
+ * OPTIONS) to a non-local host is refused unless `confirmedHost` names that host. Redirects are
+ * returned as they are (status 3xx with its Location header), never followed.
  */
 export class HttpRequestService {
   private fetchImpl: typeof fetch;
@@ -58,6 +59,9 @@ export class HttpRequestService {
       const res = await this.fetchImpl(url, {
         method,
         headers,
+        // A redirect is answered, not followed: following it could replay the request to a host
+        // that was never confirmed.
+        redirect: 'manual',
         ...(hasBody ? { body: req.body } : {}),
         signal: AbortSignal.timeout(this.timeoutMs),
       });

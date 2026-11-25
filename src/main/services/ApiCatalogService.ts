@@ -113,7 +113,8 @@ class Docs {
   get(name: string): Raw {
     const file = path.resolve(this.dir, name);
     // Refs stay inside the spec's folder tree.
-    if (path.relative(this.dir, file).startsWith('..')) throw new Error(`${name}: a $ref may not leave the spec folder`);
+    const rel = path.relative(this.dir, file);
+    if (rel.startsWith('..') || path.isAbsolute(rel)) throw new Error(`${name}: a $ref may not leave the spec folder`);
     let doc = this.cache.get(file);
     if (!doc) {
       if (!fs.existsSync(file)) throw new Error(`${path.basename(file)} not found in ${this.dir}`);
@@ -130,7 +131,8 @@ class Docs {
   /** The node a `$ref` points at, and the file it lives in. */
   deref(ref: string, file: string): { node: Raw; file: string } {
     const [refFile, pointer = ''] = String(ref).split('#');
-    const target = refFile || file;
+    // A file ref is relative to the file that contains it; names are kept relative to the spec folder.
+    const target = refFile ? path.relative(this.dir, path.resolve(this.dir, path.dirname(file), refFile)) || refFile : file;
     const node = pointer
       .split('/')
       .filter(Boolean)

@@ -103,3 +103,16 @@ describe('API Explorer IPC', () => {
     expect(await invoke('apiExplorer:saveTemplate', { path: 'api/shop.http', name: 'Bad' })).toEqual({ ok: false, error: 'Invalid save request' });
   });
 });
+
+describe('API Explorer history redaction (SPEC-0076 review)', () => {
+  it('stores credential headers without their values', async () => {
+    const { redactHeaders, REDACTED } = await import('../../src/main/ipc/apiExplorer.ipc');
+    expect(redactHeaders({ Authorization: 'Bearer abc', Cookie: 'sid=1', 'X-Api-Key': 'k', 'X-Session-Token': 't', 'X-Trace': 'keep' })).toEqual({
+      Authorization: REDACTED,
+      Cookie: REDACTED,
+      'X-Api-Key': REDACTED,
+      'X-Session-Token': REDACTED,
+      'X-Trace': 'keep',
+    });
+  });
+});

@@ -85,3 +85,24 @@ describe('HttpRequestService', () => {
     expect(t.refused).toBeUndefined();
   });
 });
+
+describe('HttpRequestService redirects (SPEC-0076 review)', () => {
+  it('returns a redirect instead of following it, so it cannot reach an unconfirmed host', async () => {
+    const http = await import('http');
+    let hits = 0;
+    const server = http.createServer((req, res) => {
+      hits++;
+      res.writeHead(307, { Location: 'https://elsewhere.example.test/steal' });
+      res.end();
+    });
+    await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
+    try {
+      const port = (server.address() as import('net').AddressInfo).port;
+      const r = await new HttpRequestService({ log: () => {} }).send({ method: 'POST', url: `http://127.0.0.1:${port}/x`, body: '{"a":1}' });
+      expect(r.status).toBe(307);
+      expect(hits).toBe(1);
+    } finally {
+      await new Promise<void>((r) => server.close(() => r()));
+    }
+  });
+});

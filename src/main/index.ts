@@ -171,6 +171,13 @@ function registerAllIpc(): void {
     },
   });
   watcherService.onPath((filePath, kind) => storyboards.onWatcherPath(filePath, kind));
+  // An edited cockpit.yaml applies at once: the Help menu and the KB citation prefix follow it (the
+  // views read the file per call). Watched folders apply on the next start.
+  watcherService.onPath((filePath) => {
+    if (path.basename(filePath) !== PROJECT_CONFIG_FILE) return;
+    createApplicationMenu(configService.getProject().config.links);
+    setKbBundlePrefix(configService.getConfig().knowledgeBase.rootPath);
+  });
 }
 
 function registerAssetProtocol(): void {

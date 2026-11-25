@@ -6,6 +6,15 @@ import { ApiTemplateService } from '../services/ApiTemplateService';
 import { HttpRequestService, type HttpRequestOptions } from '../services/HttpRequestService';
 import type { ApiRequest, ApiResponse, SaveTemplateRequest, SaveTemplateResult } from '../../shared/apiExplorer';
 
+/** Headers whose values are credentials; the history keeps their names only. */
+const SECRET_HEADER = /^(authorization|proxy-authorization|cookie|set-cookie|x-api-key|api-key|x-auth-token)$|token|secret|password/i;
+export const REDACTED = '<redacted>';
+
+/** The headers as the history stores them: credential values replaced. */
+export function redactHeaders(headers: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(headers).map(([k, v]) => [k, SECRET_HEADER.test(k) ? REDACTED : v]));
+}
+
 /** Path and query of a URL, for the history list. */
 function pathOf(url: string): string {
   try {
@@ -52,7 +61,7 @@ export function registerApiExplorerIpc(ipcMain: IpcMain, configService: ConfigSe
       url: request.url,
       status: r.status,
       durationMs: r.durationMs,
-      request: { ...(request.body ? { body: request.body } : {}), ...(request.headers ? { headers: request.headers } : {}) },
+      request: { ...(request.body ? { body: request.body } : {}), ...(request.headers && Object.keys(request.headers).length ? { headers: redactHeaders(request.headers) } : {}) },
       ...(r.refused ? { refused: true } : {}),
     });
     return r;

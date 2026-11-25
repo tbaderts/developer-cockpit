@@ -107,9 +107,9 @@ export class ConfigService {
         const raw = fs.readFileSync(this.configFile, 'utf-8');
         const loaded = JSON.parse(raw) as Partial<CockpitConfig>;
         const merged = this.merge(DEFAULT_CONFIG, loaded);
-        // A setting the cockpit no longer has: API base URLs now come from cockpit.yaml.
+        // Settings the cockpit no longer has (API base URLs now come from cockpit.yaml).
         const infra = merged.infrastructure as unknown as Record<string, unknown>;
-        const removed = ['omsCoreUrl'].filter((k) => k in infra);
+        const removed = Object.keys(infra).filter((k) => !(k in DEFAULT_CONFIG.infrastructure) && k !== 'dockerPath');
         for (const k of removed) delete infra[k];
         const keys = options.migrateKeys?.(merged) ?? { config: merged, changed: false };
         const config = keys.config;

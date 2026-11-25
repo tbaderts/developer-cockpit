@@ -244,7 +244,7 @@ export function SettingsView() {
                   id="knowledgeServerUrl"
                   value={draft.ai.knowledgeServerUrl ?? DEFAULT_KNOWLEDGE_SERVER_URL}
                   onChange={(e) => updateAi({ knowledgeServerUrl: e.target.value })}
-                  placeholder={DEFAULT_KNOWLEDGE_SERVER_URL}
+                  placeholder={project?.config.knowledgeBase.serverUrl ?? 'From cockpit.yaml, or empty for local search'}
                 />
                 <p className="text-xs text-muted-foreground">
                   The Knowledge Base chat uses this server's search and read tools. When it is unreachable, the chat falls back to local search.
@@ -401,30 +401,9 @@ export function SettingsView() {
                 />
               </div>
               <Separator />
-              <div className="space-y-2">
-                <Label htmlFor="prometheusUrl">Prometheus URL</Label>
-                <Input
-                  id="prometheusUrl"
-                  value={draft.infrastructure.prometheusUrl}
-                  onChange={(e) => updateInfra({ prometheusUrl: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="grafanaUrl">Grafana URL</Label>
-                <Input
-                  id="grafanaUrl"
-                  value={draft.infrastructure.grafanaUrl}
-                  onChange={(e) => updateInfra({ grafanaUrl: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lokiUrl">Loki URL</Label>
-                <Input
-                  id="lokiUrl"
-                  value={draft.infrastructure.lokiUrl}
-                  onChange={(e) => updateInfra({ lokiUrl: e.target.value })}
-                />
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Monitoring targets, Prometheus and Grafana links are set per project in cockpit.yaml (<code>monitoring</code>, <code>links</code>).
+              </p>
               <div className="space-y-2">
                 <Label htmlFor="apiTemplateSources">API Explorer template files</Label>
                 <textarea

@@ -34,6 +34,7 @@ describe('Settings', () => {
     expect((await screen.findByTestId('project-status')).textContent).toBe('1 error');
     expect(screen.getByTestId('project-card').textContent).toContain('/work/acme/cockpit.yaml');
     expect(screen.getByTestId('project-errors').textContent).toContain('monitoring.services[1].check.kind: Invalid input');
+    expect(screen.getByTestId('project-errors-effect').textContent).toMatch(/none of the file applies/);
   });
 
   it('project card summarises a valid file and locks the settings it states', async () => {

@@ -9,6 +9,7 @@ knowledgeBase:
   root: knowledge-base                       # Markdown documentation the Knowledge Base view reads
   checkScript: tools/okf-check/okf-check.mjs # optional checker the KB health panel runs
   # stateDiagramDoc: domain/order-state.md   # optional: steps may link to its stateDiagram transitions
+  # serverUrl: http://localhost:8091/mcp     # optional knowledge server (MCP) for the KB chat
 
 specs:
   cli: specs/tools/spec.mjs                  # the spec workflow CLI the Spec Tickets view calls
