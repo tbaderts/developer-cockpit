@@ -1,4 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
+
+// The menu module imports electron; the helper under test needs none of it (and a checkout may lack the binary).
+vi.mock('electron', () => ({ Menu: {}, shell: { openExternal: vi.fn() }, app: {}, BrowserWindow: {} }));
 import { helpLinkItems } from '../../src/main/menu';
 import { parseProjectConfig } from '../../src/shared/projectConfig';
 
